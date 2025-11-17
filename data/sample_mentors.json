@@ -1,0 +1,39 @@
+[
+  {
+    "name": "김시니어",
+    "age": 35,
+    "location": "서울",
+    "job_title": "시니어 소프트웨어 엔지니어",
+    "experience_years": 10,
+    "expertise": ["Python", "웹 개발", "코드 리뷰", "아키텍처"],
+    "interests": ["카페", "독서", "영화감상"],
+    "available_days": ["월", "수", "금"],
+    "preferred_budget": 20000,
+    "introduction": "신입 개발자들이 실무에 잘 적응할 수 있도록 도와주고 싶습니다."
+  },
+  {
+    "name": "박팀장",
+    "age": 40,
+    "location": "서울",
+    "job_title": "마케팅 팀장",
+    "experience_years": 15,
+    "expertise": ["디지털 마케팅", "브랜딩", "팀 관리"],
+    "interests": ["등산", "전시회", "요가"],
+    "available_days": ["화", "목", "토"],
+    "preferred_budget": 40000,
+    "introduction": "후배들과 함께 성장하는 것을 즐깁니다."
+  },
+  {
+    "name": "최대리",
+    "age": 32,
+    "location": "서울",
+    "job_title": "시니어 디자이너",
+    "experience_years": 7,
+    "expertise": ["UI/UX", "브랜딩", "프로토타이핑"],
+    "interests": ["미술관", "카페", "사진"],
+    "available_days": ["월", "화", "목"],
+    "preferred_budget": 25000,
+    "introduction": "디자인의 본질을 함께 고민하고 싶습니다."
+  }
+]
+

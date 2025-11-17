@@ -1,0 +1,42 @@
+[
+  {
+    "name": "이주니어",
+    "age": 25,
+    "location": "서울",
+    "job_title": "주니어 개발자",
+    "experience_years": 1,
+    "learning_goals": ["코드 리뷰 방법", "클린 코드 작성", "커리어 방향성"],
+    "interests": ["카페", "독서", "게임"],
+    "available_days": ["월", "수", "금"],
+    "budget_limit": 30000,
+    "preferred_mentor_style": "친근하고 실용적인",
+    "introduction": "좋은 개발자로 성장하고 싶습니다!"
+  },
+  {
+    "name": "최신입",
+    "age": 27,
+    "location": "서울",
+    "job_title": "주니어 마케터",
+    "experience_years": 2,
+    "learning_goals": ["마케팅 전략", "데이터 분석", "커뮤니케이션"],
+    "interests": ["운동", "미술관", "영화"],
+    "available_days": ["화", "목", "토"],
+    "budget_limit": 35000,
+    "preferred_mentor_style": "열정적이고 창의적인",
+    "introduction": "창의적인 마케터가 되고 싶습니다."
+  },
+  {
+    "name": "정인턴",
+    "age": 23,
+    "location": "서울",
+    "job_title": "디자인 인턴",
+    "experience_years": 0,
+    "learning_goals": ["포트폴리오 개선", "실무 스킬", "취업 준비"],
+    "interests": ["미술관", "카페", "드로잉"],
+    "available_days": ["월", "화", "수", "목", "금"],
+    "budget_limit": 20000,
+    "preferred_mentor_style": "꼼꼼하고 피드백을 잘 주는",
+    "introduction": "실무 경험을 쌓고 싶습니다."
+  }
+]
+
