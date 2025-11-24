@@ -1,9 +1,10 @@
 """
-멘토링 매칭 서비스 (규칙 기반)
+멘토링 매칭 서비스 (규칙 기반 + AI 기반)
 """
 
 import json
-from typing import List, Set
+import os
+from typing import List, Set, Optional
 from pathlib import Path
 
 from models import Mentor, Mentee, MentoringProgram
@@ -11,10 +12,27 @@ from models.program import RecommendedProgram
 
 
 class MatchingService:
-    """멘토링 매칭 서비스 (규칙 기반 알고리즘)"""
+    """멘토링 매칭 서비스 (규칙 기반 + AI 기반)"""
     
-    def __init__(self):
+    def __init__(self, use_ai: bool = False):
+        """
+        Args:
+            use_ai: True면 Azure OpenAI 사용, False면 규칙 기반 사용
+        """
         self.programs: List[MentoringProgram] = []
+        self.use_ai = use_ai
+        self.ai_service = None
+        
+        # AI 모드면 Azure OpenAI 서비스 초기화
+        if use_ai:
+            try:
+                from services.azure_openai_service import AzureOpenAIService
+                self.ai_service = AzureOpenAIService()
+                print("✅ Azure OpenAI 모드 활성화")
+            except Exception as e:
+                print(f"⚠️  Azure OpenAI 초기화 실패: {e}")
+                print("📌 규칙 기반 모드로 전환합니다.")
+                self.use_ai = False
     
     def load_programs_from_file(self, file_path: str):
         """JSON 파일에서 프로그램 목록 로드"""
@@ -131,7 +149,7 @@ class MatchingService:
         top_k: int = 5
     ) -> List[RecommendedProgram]:
         """
-        멘토와 멘티에게 적합한 프로그램 추천 (규칙 기반)
+        멘토와 멘티에게 적합한 프로그램 추천
         
         Args:
             mentor: 멘토 프로필
@@ -145,7 +163,73 @@ class MatchingService:
         if not self.programs:
             raise ValueError("추천할 프로그램이 없습니다. 먼저 프로그램을 로드해주세요.")
         
-        print(f"\n🔍 {mentor.name}(멘토)와 {mentee.name}(멘티)를 위한 프로그램을 분석 중...")
+        # AI 모드 vs 규칙 기반 모드
+        if self.use_ai and self.ai_service:
+            return self._find_matches_ai(mentor, mentee, top_k)
+        else:
+            return self._find_matches_rule_based(mentor, mentee, top_k)
+    
+    def _find_matches_ai(
+        self,
+        mentor: Mentor,
+        mentee: Mentee,
+        top_k: int
+    ) -> List[RecommendedProgram]:
+        """AI 기반 추천 (Azure OpenAI)"""
+        
+        print(f"\n🤖 Azure OpenAI로 {mentor.name}(멘토)와 {mentee.name}(멘티)를 분석 중...")
+        
+        # 멘티 예산 내의 프로그램만 필터링
+        affordable_programs = [
+            p for p in self.programs
+            if p.estimated_cost <= mentee.budget_limit
+        ]
+        
+        if not affordable_programs:
+            print(f"⚠️  예산({mentee.budget_limit:,}원) 내의 프로그램이 없습니다.")
+            return []
+        
+        print(f"💰 예산 내 프로그램: {len(affordable_programs)}개")
+        
+        # Azure OpenAI API 호출
+        try:
+            recommendations = self.ai_service.generate_recommendations(
+                mentor_profile=mentor.model_dump(),
+                mentee_profile=mentee.model_dump(),
+                available_programs=[p.model_dump() for p in affordable_programs],
+                top_k=min(top_k, len(affordable_programs))
+            )
+            
+            # 결과 조합
+            results = []
+            for rec in recommendations:
+                program_id = rec.get("program_id")
+                program = next((p for p in self.programs if p.program_id == program_id), None)
+                
+                if program:
+                    results.append(RecommendedProgram(
+                        program=program,
+                        match_score=rec.get("match_score", 0),
+                        reason=rec.get("reason", "")
+                    ))
+            
+            print(f"✨ Azure OpenAI가 {len(results)}개 프로그램을 추천했습니다!")
+            return results
+            
+        except Exception as e:
+            print(f"❌ AI 추천 중 오류 발생: {e}")
+            print("📌 규칙 기반으로 전환합니다...")
+            return self._find_matches_rule_based(mentor, mentee, top_k)
+    
+    def _find_matches_rule_based(
+        self,
+        mentor: Mentor,
+        mentee: Mentee,
+        top_k: int
+    ) -> List[RecommendedProgram]:
+        """규칙 기반 추천"""
+        
+        print(f"\n🔍 규칙 기반으로 {mentor.name}(멘토)와 {mentee.name}(멘티)를 분석 중...")
         
         # 멘티 예산 내의 프로그램만 필터링
         affordable_programs = [

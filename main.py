@@ -70,7 +70,7 @@ def print_recommendations(recommendations):
         print_separator()
 
 
-def example_scenario_1():
+def example_scenario_1(use_ai: bool = False):
     """시나리오 1: 개발자 멘토-멘티 (카페 선호)"""
     
     print("\n🎬 시나리오 1: 개발자 멘토-멘티 매칭 (카페 선호)")
@@ -91,7 +91,7 @@ def example_scenario_1():
     print(f"   예산: {mentee.budget_limit:,}원")
     
     # 매칭 실행
-    matching_service = MatchingService()
+    matching_service = MatchingService(use_ai=use_ai)
     matching_service.load_programs_from_file("data/sample_programs.json")
     
     recommendations = matching_service.find_matches(
@@ -103,7 +103,7 @@ def example_scenario_1():
     print_recommendations(recommendations)
 
 
-def example_scenario_2():
+def example_scenario_2(use_ai: bool = False):
     """시나리오 2: 다양한 관심사 (운동, 문화생활)"""
     
     print("\n🎬 시나리오 2: 다양한 관심사 매칭 (운동, 문화생활)")
@@ -124,7 +124,7 @@ def example_scenario_2():
     print(f"   예산: {mentee.budget_limit:,}원")
     
     # 매칭 실행
-    matching_service = MatchingService()
+    matching_service = MatchingService(use_ai=use_ai)
     matching_service.load_programs_from_file("data/sample_programs.json")
     
     recommendations = matching_service.find_matches(
@@ -176,7 +176,7 @@ def get_valid_input(prompt: str, max_value: int) -> int:
             exit(0)
 
 
-def interactive_mode():
+def interactive_mode(use_ai: bool = False):
     """대화형 모드 - 사용자가 직접 멘토와 멘티를 선택"""
     print("\n" + "="*80)
     print(" 💬 대화형 매칭 모드 ")
@@ -217,7 +217,7 @@ def interactive_mode():
         print(f"   예산: {mentee.budget_limit:,}원")
         
         # 5. 추천 프로그램 찾기
-        matching_service = MatchingService()
+        matching_service = MatchingService(use_ai=use_ai)
         matching_service.load_programs_from_file("data/sample_programs.json")
         
         recommendations = matching_service.find_matches(
@@ -232,7 +232,7 @@ def interactive_mode():
         print("\n" + "="*80)
         retry = input("\n다른 조합으로 다시 시도하시겠습니까? (y/n): ").strip().lower()
         if retry == 'y' or retry == 'yes':
-            interactive_mode()  # 재귀 호출
+            interactive_mode(use_ai=use_ai)  # 재귀 호출
         else:
             print("\n✅ 프로그램을 종료합니다. 감사합니다!")
             
@@ -247,27 +247,46 @@ def interactive_mode():
 def main():
     """메인 함수"""
     print("="*80)
-    print(" 🎯 신입사원 멘토링 매칭 Agent (규칙 기반 추천) ")
+    print(" 🎯 신입사원 멘토링 매칭 Agent ")
     print("="*80)
     
     print("\n이 프로그램은 멘토와 멘티의 프로필을 분석하여")
     print("최적의 멘토링 프로그램을 추천합니다.")
     print("(지역, 예산, 관심사 등을 종합적으로 고려합니다)\n")
     
-    # 모드 선택
-    print("실행 모드를 선택하세요:")
-    print("1. 대화형 모드 (직접 멘토/멘티 선택)")
-    print("2. 예시 시나리오 실행 (자동)")
-    print("3. 종료")
+    # 매칭 방식 선택
+    print("매칭 방식을 선택하세요:")
+    print("1. 🤖 AI 기반 (Azure OpenAI) - 더 정교한 분석")
+    print("2. 📊 규칙 기반 (점수 계산) - 빠르고 예측 가능")
     
     try:
+        mode_choice = input("\n선택 (1/2): ").strip()
+        
+        if mode_choice == "1":
+            use_ai = True
+            print("\n✨ AI 기반 매칭 모드를 선택했습니다!")
+        elif mode_choice == "2":
+            use_ai = False
+            print("\n📊 규칙 기반 매칭 모드를 선택했습니다!")
+        else:
+            print("\n⚠️  잘못된 선택입니다. 규칙 기반 모드로 진행합니다.")
+            use_ai = False
+        
+        print()
+        
+        # 실행 모드 선택
+        print("실행 모드를 선택하세요:")
+        print("1. 대화형 모드 (직접 멘토/멘티 선택)")
+        print("2. 예시 시나리오 실행 (자동)")
+        print("3. 종료")
+        
         choice = input("\n선택 (1/2/3): ").strip()
         
         if choice == "1":
-            interactive_mode()
+            interactive_mode(use_ai=use_ai)
         elif choice == "2":
-            example_scenario_1()
-            example_scenario_2()
+            example_scenario_1(use_ai=use_ai)
+            example_scenario_2(use_ai=use_ai)
             print("\n✅ 모든 시나리오 실행 완료!")
         elif choice == "3":
             print("\n프로그램을 종료합니다. 👋")

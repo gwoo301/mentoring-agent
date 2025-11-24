@@ -4,5 +4,9 @@
 
 from .matching_service import MatchingService
 
-__all__ = ["MatchingService"]
+try:
+    from .azure_openai_service import AzureOpenAIService
+    __all__ = ["MatchingService", "AzureOpenAIService"]
+except ImportError:
+    __all__ = ["MatchingService"]
 

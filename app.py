@@ -44,7 +44,7 @@ def main():
     st.markdown("---")
     st.markdown("""
     이 시스템은 멘토와 멘티의 프로필을 분석하여 최적의 멘토링 프로그램을 추천합니다.  
-    **지역, 예산, 관심사, 직무**를 종합적으로 고려한 규칙 기반 알고리즘을 사용합니다.
+    **지역, 예산, 관심사, 직무**를 종합적으로 고려합니다.
     """)
     
     # 데이터 로드
@@ -54,6 +54,23 @@ def main():
     except Exception as e:
         st.error(f"❌ 데이터 로드 실패: {e}")
         return
+    
+    # 사이드바: 매칭 방식 선택
+    st.sidebar.header("🔧 매칭 방식")
+    use_ai = st.sidebar.radio(
+        "추천 알고리즘을 선택하세요:",
+        options=[False, True],
+        format_func=lambda x: "🤖 AI 기반 (Azure OpenAI)" if x else "📊 규칙 기반 (점수 계산)",
+        index=0,
+        help="AI 기반은 더 정교하지만 API 비용이 발생합니다."
+    )
+    
+    if use_ai:
+        st.sidebar.info("✨ Azure OpenAI를 사용하여 더 정교한 분석을 제공합니다.")
+    else:
+        st.sidebar.info("⚡ 빠르고 예측 가능한 규칙 기반 매칭을 사용합니다.")
+    
+    st.sidebar.markdown("---")
     
     # 사이드바: 멘토/멘티 선택
     st.sidebar.header("👥 프로필 선택")
@@ -123,7 +140,7 @@ def main():
         with st.spinner("🔍 최적의 프로그램을 찾는 중..."):
             try:
                 # 매칭 서비스 실행
-                matching_service = MatchingService()
+                matching_service = MatchingService(use_ai=use_ai)
                 matching_service.load_programs_from_file("data/sample_programs.json")
                 
                 recommendations = matching_service.find_matches(
@@ -180,7 +197,7 @@ def main():
     st.markdown("---")
     st.markdown("""
     <div style='text-align: center'>
-        <p>🎯 신입사원 멘토링 매칭 Agent | 규칙 기반 추천 시스템</p>
+        <p>🎯 신입사원 멘토링 매칭 Agent | AI + 규칙 기반 추천 시스템</p>
         <p style='font-size: 0.8em; color: gray;'>지역, 예산, 관심사, 직무를 고려한 최적의 매칭</p>
     </div>
     """, unsafe_allow_html=True)
